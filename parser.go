@@ -51,25 +51,25 @@ type node struct {
 
 // a stack to keep track of the DOM tree structure
 type stack struct {
-	b []rune
+	b []string
 }
 
-func (s *stack) push(r rune) {
-	s.b = append(s.b, r)
+func (s *stack) push(v string) {
+	s.b = append(s.b, v)
 }
 
-func (s *stack) pop() rune {
+func (s *stack) pop() string {
 	if len(s.b) == 0 {
-		return '0'
+		return ""
 	}
-	r := s.b[len(s.b)-1]
+	v := s.b[len(s.b)-1]
 	s.b = s.b[:len(s.b)-1]
-	return r
+	return v
 }
 
-func (s *stack) peek() rune {
+func (s *stack) peek() string {
 	if len(s.b) == 0 {
-		return '0'
+		return ""
 	}
 	return s.b[len(s.b)-1]
 }
@@ -106,7 +106,7 @@ func (d *Decoder) parse() error {
 		switch tok {
 		case '<':
 			// start tag
-			d.stack.push(tok) // TODO: we need to push and pop full tag names
+			d.stack.push(d.s.TokenText()) // TODO: figure out how to handle childrens
 			d.s.Scan()
 			switch d.s.TokenText() {
 			case HTML:
