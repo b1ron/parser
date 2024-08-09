@@ -106,7 +106,7 @@ func (d *Decoder) parse() error {
 		switch tok {
 		case '<':
 			// start tag
-			d.stack.push(tok) // we need to pop full tag names
+			d.stack.push(tok) // TODO: we need to push and pop full tag names
 			d.s.Scan()
 			switch d.s.TokenText() {
 			case HTML:
