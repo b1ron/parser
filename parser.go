@@ -37,6 +37,7 @@ const (
 	SEARCH  = "search"
 )
 
+// DOM tree
 type tree struct {
 	element *node
 	next    *node
@@ -48,17 +49,48 @@ type node struct {
 	next  *node
 }
 
+// a stack to keep track of the DOM tree structure
+type stack struct {
+	b []rune
+}
+
+func (s *stack) push(r rune) {
+	s.b = append(s.b, r)
+}
+
+func (s *stack) pop() rune {
+	if len(s.b) == 0 {
+		return '0'
+	}
+	v := s.b[len(s.b)-1]
+	s.b = s.b[:len(s.b)-1]
+	return v
+}
+
+func (s *stack) peek() rune {
+	if len(s.b) == 0 {
+		return '0'
+	}
+	return s.b[len(s.b)-1]
+}
+
+func (s *stack) empty() bool {
+	return len(s.b) == 0
+}
+
 type Decoder struct {
-	s    scanner.Scanner
-	b    bytes.Buffer
-	tree *node // DOM tree
+	s     scanner.Scanner
+	stack stack
+	b     bytes.Buffer
+	tree  *node
 }
 
 func NewDecoder(r io.Reader) *Decoder {
 	d := &Decoder{
-		s:    scanner.Scanner{},
-		b:    bytes.Buffer{},
-		tree: &node{},
+		s:     scanner.Scanner{},
+		stack: stack{},
+		b:     bytes.Buffer{},
+		tree:  &node{},
 	}
 
 	d.s.Init(r)
@@ -74,6 +106,7 @@ func (d *Decoder) parse() error {
 		switch tok {
 		case '<':
 			// start tag
+			d.stack.push(tok) // we need to pop full tag names
 			d.s.Scan()
 			switch d.s.TokenText() {
 			case HTML:
@@ -83,6 +116,7 @@ func (d *Decoder) parse() error {
 			case META:
 				// <meta name="twitter:card" content="summary">
 				// <meta name="twitter:site" content="@golang">
+				// <div><p>Paragraph 1</p><p>Paragraph 2</p></div>
 				d.tree.next = &node{name: d.s.TokenText()}
 				fmt.Println(d.tree.name, d.tree.next.name)
 			case STYLE:

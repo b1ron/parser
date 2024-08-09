@@ -47,6 +47,8 @@ var blob = `<!DOCTYPE html>
 var simple = `<meta name="twitter:card" content="summary">
 <meta name="twitter:site" content="@golang">`
 
+var sibling = `<div><p>Paragraph 1</p><p>Paragraph 2</p></div>`
+
 func TestNewDecoder(t *testing.T) {
 	decoder := NewDecoder(strings.NewReader(simple))
 
