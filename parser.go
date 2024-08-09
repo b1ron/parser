@@ -62,9 +62,9 @@ func (s *stack) pop() rune {
 	if len(s.b) == 0 {
 		return '0'
 	}
-	v := s.b[len(s.b)-1]
+	r := s.b[len(s.b)-1]
 	s.b = s.b[:len(s.b)-1]
-	return v
+	return r
 }
 
 func (s *stack) peek() rune {
